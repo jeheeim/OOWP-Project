@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.IO;
 using System.Threading;
 using System.Net;
+using System.Windows.Forms;
 
 namespace Timer_TCPServer
 {
@@ -29,9 +30,8 @@ namespace Timer_TCPServer
         public const string STATE_CLIENT_ON = "on";
         public const string STATE_CLIENT_OFF = "OFF";
 
-
-
         #region serverConnect
+
         private Socket server;               //서버 연결용 TCP클라이언트 
 
         private NetworkStream stream;    // 네트워크 스트림 
@@ -99,7 +99,7 @@ namespace Timer_TCPServer
         /// 입력받은 ip(서버)로 연결
         /// </summary>
         /// <param name="ip">ip주소</param>
-        ///<param name="portNum">port번호</param>
+        /// <param name="portNum">port번호</param>
         public bool Connent(string ip, int portNum)
         {
             
@@ -234,28 +234,30 @@ namespace Timer_TCPServer
                     // 읽어온 메시지가 있다면
                     if (message != null)
                     {
-						if (message == "sleep")
-						{
-							mainform.Suspend();
-						}
-						else if (message == "logoff")
-						{
-							mainform.Hibernate();
-						}
-						else if (message == "shutdown")
-						{
-							mainform.ShutDown();
-						}
+						//if (message == "sleep")
+						//{
+						//    mainform.Suspend();
+						//}
+						//else if (message == "off")
+						//{
+						//    mainform.Hibernate();
+						//}
+						//else if (message == "shutdown")
+						//{
+						//    mainform.ShutDown();
+						//}
+
+						MessageBox.Show(message);
                     }
                 }
             }
-            catch//(Exception e) // 메인서버와 통신에서 예외 발생할 경우
+            catch(Exception e) // 메인서버와 통신에서 예외 발생할 경우
             {
-
+				MessageBox.Show(e.ToString());
             }
             finally
             {
-                Disconnect();  // 서버 연결 종료...				
+                //Disconnect();  // 서버 연결 종료...				
             }
         }
 

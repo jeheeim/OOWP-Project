@@ -125,9 +125,8 @@ namespace PowerSaver
 			SetToolStripEnabled();
 		}
 
-		#region button click
-
-		/* 사용자 등록
+		/***** 메소드 종류 *****
+		 * 사용자 등록
 		 * 서버 연결(커맨드 대기)
 		 * 대기모드
 		 * 최대 절전모드
@@ -136,7 +135,9 @@ namespace PowerSaver
 		 * 로그 저장
 		 * 로그 출력
 		 * 툴스트립의 취소버튼
+		 ***********************
 		 */
+		#region button click
 
 		// register user
 		private void BtnRegisterUser_Click(object sender, EventArgs e)
@@ -192,6 +193,7 @@ namespace PowerSaver
 			{
 				server.Disconnect();
 				btnConnectServer.Text = "서버 연결";
+				serverConnected = false;
 			}
 		}
 
