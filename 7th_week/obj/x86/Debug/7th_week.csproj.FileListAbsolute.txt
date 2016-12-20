@@ -1,0 +1,11 @@
+C:\Users\jay\Desktop\study\oowp\7th_week\7th_week\bin\Debug\7th_week.exe
+C:\Users\jay\Desktop\study\oowp\7th_week\7th_week\bin\Debug\7th_week.pdb
+C:\Users\jay\Desktop\study\oowp\7th_week\7th_week\obj\x86\Debug\_7th_week.Form1.resources
+C:\Users\jay\Desktop\study\oowp\7th_week\7th_week\obj\x86\Debug\_7th_week.Properties.Resources.resources
+C:\Users\jay\Desktop\study\oowp\7th_week\7th_week\obj\x86\Debug\7th_week.csproj.GenerateResource.Cache
+C:\Users\jay\Desktop\study\oowp\7th_week\7th_week\obj\x86\Debug\7th_week.exe
+C:\Users\jay\Desktop\study\oowp\7th_week\7th_week\obj\x86\Debug\7th_week.pdb
+C:\Users\jay\Desktop\study\oowp\7th_week\7th_week\obj\x86\Debug\7th_week.csprojResolveAssemblyReference.cache
+C:\Users\jay\Desktop\study\oowp\7th_week\7th_week\bin\Debug\7th_week.exe.config
+C:\Users\jay\Desktop\study\oowp\7th_week\7th_week\bin\Debug\MouseKeyboardLibrary.dll
+C:\Users\jay\Desktop\study\oowp\7th_week\7th_week\bin\Debug\MouseKeyboardLibrary.pdb
