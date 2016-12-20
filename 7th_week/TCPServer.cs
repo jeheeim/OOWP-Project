@@ -236,27 +236,15 @@ namespace Timer_TCPServer
                     {
 						if (message == "sleep")
 						{
-							String message1 = mainform.CmdWrit + "&" + mainform.ActSusp;
-							String URL = mainform.logURL + "?id=" + mainform.id + "&" + message;
-							String argument = "monitor off";
-
-							mainform.ButtonAction(message, URL, argument);
+							mainform.Suspend();
 						}
 						else if (message == "logoff")
 						{
-							String message1 = mainform.CmdWrit + "&" + mainform.ActSusp;
-							String URL = mainform.logURL + "?id=" + mainform.id + "&" + message;
-							String argument = "exitwin logoff";
-
-							mainform.ButtonAction(message, URL, argument);
+							mainform.Hibernate();
 						}
 						else if (message == "shutdown")
 						{
-							String message1 = mainform.CmdWrit + "&" + mainform.ActShut;
-							String URL = mainform.logURL + "?id=" + mainform.id + "&" + message;
-							String argument = "exitwin poweroff";
-
-							mainform.ButtonAction(message, URL, argument);
+							mainform.ShutDown();
 						}
                     }
                 }

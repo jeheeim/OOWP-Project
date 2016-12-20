@@ -564,25 +564,18 @@ namespace PowerSaver
 
 		#region 버튼 클릭시 실제 실행되는 메소드
 
-		public void ButtonAction(string message, string URL, string argument)
-		{
-			SendRequest(message, URL);
-
-			Process.Start(fileName: @"C:\Users\jay\Downloads\nircmd-x64\nircmd.exe", arguments: argument);
-		}
-
-		void Suspend()
+		public void Suspend()
 		{
 			string message = cmdWrite + "&" + suspend;
 			string URL = logURL + "?id=" + id + "&" + message;
 			string argument = "standby force";
 
-			MouseMove += new MouseEventHandler(MainForm_MouseMove);
+			SendRequest(message, URL);
 
-			ButtonAction(message, URL, argument);
+			Process.Start(fileName: @"C:\Users\jay\Downloads\nircmd-x64\nircmd.exe", arguments: argument);
 		}
 
-		void Hibernate()
+		public void Hibernate()
 		{
 			string message = cmdWrite + "&" + hibernate;
 			string URL = logURL + "?id=" + id + "&" + message;
@@ -592,13 +585,15 @@ namespace PowerSaver
 			Process.Start(fileName: "rundll32", arguments: "powrprof.dll, SetSuspendState");
 		}
 
-		void ShutDown()
+		public void ShutDown()
 		{
 			String message = cmdWrite + "&" + shutdown;
 			String URL = logURL + "?id=" + id + "&" + message;
 			String argument = "exitwin poweroff";
 
-			ButtonAction(message, URL, argument);
+			SendRequest(message, URL);
+
+			Process.Start(fileName: @"C:\Users\jay\Downloads\nircmd-x64\nircmd.exe", arguments: argument);
 		}
 
 		void Execute()
