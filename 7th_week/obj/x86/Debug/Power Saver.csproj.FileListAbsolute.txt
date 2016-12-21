@@ -28,3 +28,4 @@ C:\Users\jay\Documents\GitHub\OOWP Project\7th_week\obj\x86\Debug\Power Saver.cs
 C:\Users\Jay\Documents\GitHub\OOWP-Project\7th_week\bin\Debug\Power Saver.exe.config
 C:\Users\Jay\Documents\GitHub\OOWP-Project\7th_week\obj\x86\Debug\Power Saver.exe
 C:\Users\Jay\Documents\GitHub\OOWP-Project\7th_week\obj\x86\Debug\Power Saver.pdb
+C:\Users\jay\Documents\GitHub\OOWP Project\7th_week\obj\x86\Debug\PowerSaver.OptionForm.resources

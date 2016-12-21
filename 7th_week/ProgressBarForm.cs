@@ -79,7 +79,7 @@ namespace PowerSaver
 		void Suspend()
 		{
 			string message = mainform.CmdWrit + "&" + mainform.ActSusp;
-			string URL = mainform.logURL + "?id=" + mainform.id + "&" + message;
+			string URL = mainform.LogURL + "?id=" + mainform.id + "&" + message;
 			string argument = "standby force";
 
 			MouseMove += new MouseEventHandler(mainform.MainForm_MouseMove_SUSPENDED);
@@ -92,7 +92,7 @@ namespace PowerSaver
 		void Hibernate()
 		{
 			string message = mainform.CmdWrit + "&" + mainform.ActHibr;
-			string URL = mainform.logURL + "?id=" + mainform.id + "&" + message;
+			string URL = mainform.LogURL + "?id=" + mainform.id + "&" + message;
 
 			Process.Start(fileName: "rundll32", arguments: "powrprof.dll, SetSuspendState");
 		}
@@ -100,7 +100,7 @@ namespace PowerSaver
 		void ShutDown()
 		{
 			String message = mainform.CmdWrit + "&" + mainform.ActShut;
-			String URL = mainform.logURL + "?id=" + mainform.id + "&" + message;
+			String URL = mainform.LogURL + "?id=" + mainform.id + "&" + message;
 			String argument = "exitwin poweroff";
 
 			mainform.SendRequest(message, URL);

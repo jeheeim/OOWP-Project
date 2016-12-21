@@ -16,7 +16,6 @@ namespace PowerSaver
 		shutdown
 	}
 
-
 	public partial class MainForm : Form
 	{
 		// 멤버 변수
@@ -72,7 +71,6 @@ namespace PowerSaver
 		
 		bool firstOrNot = true;
 		bool initialized = false;
-		bool serverConnected = false;
 
 		public enum RadiobuttonSelected
 		{
@@ -106,6 +104,9 @@ namespace PowerSaver
 		MOD autoExecute = MOD.suspend;
 		int autoExecuteTime = 1800;
 
+		public MOD AutoExecute { set { autoExecute = value; } }
+		public int AutoExecuteTime { set { autoExecuteTime = value; } }
+
 		// 메소드
 
 		public MainForm()
@@ -114,7 +115,8 @@ namespace PowerSaver
 
 			tboxLog.ScrollBars = ScrollBars.Vertical;
 
-			string fName = "userid.txt"; // 전체경로를 지정해 줘야함
+			string fName = "option.txt"; // 전체경로를 지정해 줘야함
+			string resultString;
 
 			try
 			{
@@ -122,7 +124,12 @@ namespace PowerSaver
 
 				StreamReader read = new StreamReader(open, Encoding.Default);
 
-				id = read.ReadToEnd();
+				resultString = read.ReadToEnd();
+
+				string[] result = resultString.Split('/');
+				id = result[0];
+				ip = result[1];
+				portNum = int.Parse(result[2]);
 			}
 			catch (FileLoadException e)
 			{
@@ -173,6 +180,11 @@ namespace PowerSaver
 		private void BtnOption_Click(object sender, EventArgs e)
 		{
 			OptionForm optionForm = new OptionForm(this);
+
+			optionForm.ShowDialog();
+
+			MessageBox.Show(id + " " + ip + " " + portNum);
+			MessageBox.Show(autoExecute.ToString() + autoExecuteTime);
 		}
 
 		#region 절전모드, 최대 절전모드, 컴퓨터 종료
@@ -326,9 +338,6 @@ namespace PowerSaver
 
 			switch (key)
 			{
-				case Keys.R:
-					btnRegisterUser.PerformClick();
-					break;
 				case Keys.M:
 					btnSuspend.PerformClick();
 					break;
@@ -425,10 +434,6 @@ namespace PowerSaver
 		{
 			if (server.Connent(ip, portNum))
 			{
-				serverConnected = true;
-
-				btnOption.Text = "서버 연결 해체";
-
 				server.Start();
 
 				MessageBox.Show("서버 연결");
@@ -650,5 +655,35 @@ namespace PowerSaver
 
 		#endregion
 
+		public void ChangeID(string id)
+		{
+			this.id = id;
+			tboxID.Text = id;
+		}
+
+		// 서버 ip나 포트번호가 바뀔 경우에 실행되는 메소드
+		public bool ReconnectToServer(string ip, int portNum)
+		{
+			server.Disconnect();
+			MessageBox.Show("서버 연결 해제");
+
+			this.ip = ip;
+			this.portNum = portNum;
+			
+			if (server.Connent(ip, portNum))
+			{
+				MessageBox.Show(ip + " " + portNum + " 연결");
+
+				server.Start();
+
+				return true;
+			}
+			else
+			{
+				MessageBox.Show("연결 실패");
+
+				return false;
+			}
+		}
 	}
 }
