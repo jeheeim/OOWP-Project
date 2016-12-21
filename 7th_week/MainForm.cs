@@ -21,8 +21,15 @@ namespace PowerSaver
 	{
 		// 멤버 변수
 
-		public string registerURL = "http://210.94.194.100:20151/registerUser.asp";
-		public string logURL = "http://210.94.194.100:20151/log.asp";
+		#region URL, URL프로퍼티
+
+		string registerURL = "http://210.94.194.100:20151/registerUser.asp";
+		string logURL = "http://210.94.194.100:20151/log.asp";
+
+		public string RegisterURL { get { return registerURL; } set { registerURL = value; } }
+		public string LogURL { get { return logURL; } set { logURL = value; } }
+		
+		#endregion
 
 		#region command list
 
@@ -51,6 +58,16 @@ namespace PowerSaver
 
 		#endregion
 
+		#region 서버 ip, 포트(변수, 프로퍼티)
+
+		string ip = "210.94.194.100";
+		int portNum = 20151;
+
+		public string IP { get { return ip; } set { ip = value; } }
+		public int PortNum { get { return portNum; } set { portNum = value; } }
+		
+		#endregion
+
 		public string id;
 		
 		bool firstOrNot = true;
@@ -75,11 +92,19 @@ namespace PowerSaver
 		NotifyIcon ntfIcon;
 		Timer_TCPServer.TCPServer server;
 		
-		System.Timers.Timer timer;
+		System.Timers.Timer selectedExecuteTimer;
+		System.Timers.Timer autoExecuteTimer;
 
 		ProgressBarForm pbarForm;
 
 		bool toolStripEnabled;
+
+		// 옵션 탭에서 지정한 시간이 지나면 자동으로 지정한 옵션이 실행된다.
+		// 그걸 위한 시간 카운트용 변수
+		// 디폴트 값은 절전모드, 30분
+		int autoCount = 0;
+		MOD autoExecute = MOD.suspend;
+		int autoExecuteTime = 1800;
 
 		// 메소드
 
@@ -123,6 +148,12 @@ namespace PowerSaver
 			server = new Timer_TCPServer.TCPServer(this);
 
 			SetToolStripEnabled();
+
+			// 프로그램 실행시 자동실행 카운트다운 시작
+			SetTimerForAutoExecution();
+
+			// 프로그램 시작시 마스터 서버에 연결
+			ConnectToServer();
 		}
 
 		/***** 메소드 종류 *****
@@ -135,66 +166,13 @@ namespace PowerSaver
 		 * 로그 저장
 		 * 로그 출력
 		 * 툴스트립의 취소버튼
-		 ***********************
-		 */
+		 ***********************/
 		#region button click
 
-		// register user
-		private void BtnRegisterUser_Click(object sender, EventArgs e)
+		// 옵션
+		private void BtnOption_Click(object sender, EventArgs e)
 		{
-			id = tboxID.Text;
-			string URL = registerURL + "?id=" + id;
-			string[] returnMessage = SendRequest(id, URL).Split(':');
-
-			if (returnMessage[0] == "OK")
-			{
-				MessageBox.Show("등록되었습니다!");
-
-				SaveUser(id);
-			}
-			else if (returnMessage[0] == "ERROR")
-			{
-				MessageBox.Show(returnMessage[1].Trim());
-
-				SaveUser(id);
-			}
-			else
-			{
-				MessageBox.Show("에러!");
-			}
-
-			string message = cmdWrite + "&" + wakeUp;
-			URL = logURL + "?id=" + id + "&" + message;
-
-			SendRequest(message, URL);
-		}
-
-		// 서버 연결
-		private void BtnConnectServer_Click(object sender, EventArgs e)
-		{
-			if (!serverConnected)
-			{
-				if (server.Connent("210.94.194.100", 20151))
-				{
-					serverConnected = true;
-
-					btnConnectServer.Text = "서버 연결 해체";
-
-					server.Start();
-
-					MessageBox.Show("서버 연결");
-				}
-				else
-				{
-					MessageBox.Show("서버 연결 실패");
-				}
-			}
-			else
-			{
-				server.Disconnect();
-				btnConnectServer.Text = "서버 연결";
-				serverConnected = false;
-			}
+			OptionForm optionForm = new OptionForm(this);
 		}
 
 		#region 절전모드, 최대 절전모드, 컴퓨터 종료
@@ -208,7 +186,7 @@ namespace PowerSaver
 
 			executeMod = MOD.suspend;
 
-			SetTimer();
+			SetTimerForDelayedExecution();
 		}
 
 		// 최대 절전모드
@@ -220,7 +198,7 @@ namespace PowerSaver
 
 			executeMod = MOD.hibernate;
 
-			SetTimer();
+			SetTimerForDelayedExecution();
 		}
 
 		// computer turn off
@@ -232,7 +210,7 @@ namespace PowerSaver
 
 			executeMod = MOD.shutdown;
 
-			SetTimer();
+			SetTimerForDelayedExecution();
 		}
 
 		#endregion
@@ -307,31 +285,30 @@ namespace PowerSaver
 			return result;
 		}
 
-		#region manage user
-
-		void SaveUser(string userID)
-		{
-			string directory = "userid.txt";
-			FileInfo fileInfo = new FileInfo(directory);
-
-			if (fileInfo.Exists) { return; }
-			else { File.WriteAllText(directory, userID);}
-		}
-
-		#endregion
-
 		#region mouse and keyboard events
 
 		// 절전모드에서 마우스를 움직이는 경우 서버로 로그를 전송하는 이벤트
-		public void MainForm_MouseMove(object sender, MouseEventArgs e)
+		public void MainForm_MouseMove_SUSPENDED(object sender, MouseEventArgs e)
 		{
 			string message = cmdWrite + "&" + wakeUp;
 			string URL = logURL + "?id=" + id + "&" + message;
 
 			SendRequest(message, URL);
 			
-			MouseMove -= new MouseEventHandler(MainForm_MouseMove);
+			MouseMove -= new MouseEventHandler(MainForm_MouseMove_SUSPENDED);
 			KeyPress += new KeyPressEventHandler(MainForm_KeyPressed);
+		}
+
+		// 기본적으로 자동실행을 지연하는 마우스 이벤트
+		public void MouseMoveDelaysAutoExecution(object sender, MouseEventArgs e)
+		{
+			autoExecuteTime = 0;
+		}
+
+		// 키보드 이벤트 역시 자동으로 자동실행을 지연한다.
+		public void KeyboardPressDelaysAutoExecution(object sender, KeyPressEventArgs e)
+		{
+			autoExecuteTime = 0;
 		}
 
 		// 단축키 이벤트
@@ -379,6 +356,7 @@ namespace PowerSaver
 
 		private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			server.Disconnect();
 			this.Dispose();
 		}
 
@@ -439,6 +417,26 @@ namespace PowerSaver
 			}
 
 			KeyPress += new KeyPressEventHandler(MainForm_KeyPressed);
+		}
+
+		// 서버 연결하는 메소드
+		// 연결해제는 종료시
+		public void ConnectToServer()
+		{
+			if (server.Connent(ip, portNum))
+			{
+				serverConnected = true;
+
+				btnOption.Text = "서버 연결 해체";
+
+				server.Start();
+
+				MessageBox.Show("서버 연결");
+			}
+			else
+			{
+				MessageBox.Show("서버 연결 실패");
+			}
 		}
 
 		#region 라디오버튼 선택 이벤트
@@ -533,35 +531,71 @@ namespace PowerSaver
 			}
 		}
 
-		#region 타이머 관련
+		#region 타이머
+		#region 자동 종료 타이머
+
+		void SetTimerForAutoExecution()
+		{
+			autoExecuteTimer = new System.Timers.Timer();
+
+			autoExecuteTimer.Interval = 1000;
+			autoExecuteTimer.Elapsed += new ElapsedEventHandler(TimerBodyForAutoExecution);
+
+			autoExecuteTimer.Start();
+
+			MouseMove += new MouseEventHandler(MouseMoveDelaysAutoExecution);
+			KeyPress += new KeyPressEventHandler(KeyboardPressDelaysAutoExecution);
+		}
+
+		void TimerBodyForAutoExecution(object sender, ElapsedEventArgs e)
+		{
+			autoCount++;
+
+			if(autoCount == autoExecuteTime)
+			{
+				autoExecuteTimer.Stop();
+				Execute();
+			}
+		}
+
+		// 자동실행 종료
+		void TurnOffAutoExecution()
+		{
+			MouseMove -= new MouseEventHandler(MouseMoveDelaysAutoExecution);
+			KeyPress -= new KeyPressEventHandler(KeyboardPressDelaysAutoExecution);
+		}
+
+		#endregion
+		#region 지연실행 타이머
 
 		// 타이머 실행
-		void SetTimer()
+		void SetTimerForDelayedExecution()
 		{
-			timer = new System.Timers.Timer();
+			selectedExecuteTimer = new System.Timers.Timer();
 
-			timer.Interval = 1000;
-			timer.Elapsed += new ElapsedEventHandler(Timer_body);
+			selectedExecuteTimer.Interval = 1000;
+			selectedExecuteTimer.Elapsed += new ElapsedEventHandler(Timer_bodyForDelayedExecution);
 
 			tStripProgBar.Minimum = 0;
 			tStripProgBar.Maximum = SetMaximum();
 
-			timer.Start();
+			selectedExecuteTimer.Start();
+			TurnOffAutoExecution();
 		}
 
 		// 1초마다 실행되는 timer의 내용
-		void Timer_body(object sender, ElapsedEventArgs e)
+		void Timer_bodyForDelayedExecution(object sender, ElapsedEventArgs e)
 		{
 			tStripProgBar.Value++;
 
 			if (tStripProgBar.Value == tStripProgBar.Maximum)
 			{
-				timer.Stop();
+				selectedExecuteTimer.Stop();
 
 				Execute();
 			}
 		}
-
+		#endregion
 		#endregion
 
 		#region 버튼 클릭시 실제 실행되는 메소드

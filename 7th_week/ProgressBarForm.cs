@@ -82,7 +82,7 @@ namespace PowerSaver
 			string URL = mainform.logURL + "?id=" + mainform.id + "&" + message;
 			string argument = "standby force";
 
-			MouseMove += new MouseEventHandler(mainform.MainForm_MouseMove);
+			MouseMove += new MouseEventHandler(mainform.MainForm_MouseMove_SUSPENDED);
 			
 			mainform.SendRequest(message, URL);
 

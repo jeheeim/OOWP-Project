@@ -16,3 +16,8 @@ C:\Users\jay\Desktop\study\oowp\Project\MouseKeyboardLibrary\MouseKeyboardLibrar
 C:\Users\jay\Desktop\study\oowp\Project\MouseKeyboardLibrary\MouseKeyboardLibrary\bin\Debug\MouseKeyboardLibrary.pdb
 C:\Users\jay\Desktop\study\oowp\Project\MouseKeyboardLibrary\MouseKeyboardLibrary\obj\Debug\MouseKeyboardLibrary.dll
 C:\Users\jay\Desktop\study\oowp\Project\MouseKeyboardLibrary\MouseKeyboardLibrary\obj\Debug\MouseKeyboardLibrary.pdb
+C:\Users\Jay\Documents\GitHub\OOWP-Project\MouseKeyboardLibrary\MouseKeyboardLibrary\bin\Debug\MouseKeyboardLibrary.dll
+C:\Users\Jay\Documents\GitHub\OOWP-Project\MouseKeyboardLibrary\MouseKeyboardLibrary\bin\Debug\MouseKeyboardLibrary.pdb
+C:\Users\Jay\Documents\GitHub\OOWP-Project\MouseKeyboardLibrary\MouseKeyboardLibrary\obj\Debug\MouseKeyboardLibrary.csprojResolveAssemblyReference.cache
+C:\Users\Jay\Documents\GitHub\OOWP-Project\MouseKeyboardLibrary\MouseKeyboardLibrary\obj\Debug\MouseKeyboardLibrary.dll
+C:\Users\Jay\Documents\GitHub\OOWP-Project\MouseKeyboardLibrary\MouseKeyboardLibrary\obj\Debug\MouseKeyboardLibrary.pdb
