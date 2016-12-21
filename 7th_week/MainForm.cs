@@ -4,7 +4,6 @@ using System.Windows.Forms;
 using System.IO;
 using System.Net;
 using System.Diagnostics;
-using System.Threading;
 using System.Timers;
 
 namespace PowerSaver
@@ -134,6 +133,8 @@ namespace PowerSaver
 			catch (FileLoadException e)
 			{
 				id = null;
+				ip = "210.94.194.100";
+				PortNum = 20151;
 
 				MessageBox.Show(e.ToString());
 			}
@@ -302,12 +303,24 @@ namespace PowerSaver
 		// 절전모드에서 마우스를 움직이는 경우 서버로 로그를 전송하는 이벤트
 		public void MainForm_MouseMove_SUSPENDED(object sender, MouseEventArgs e)
 		{
+			WakeUpFromSUSPENDED();
+		}
+
+		public void MainForm_KeyPress_SUSPENDED(object sender, KeyPressEventArgs e)
+		{
+			WakeUpFromSUSPENDED();
+		}
+
+		public void WakeUpFromSUSPENDED()
+		{
 			string message = cmdWrite + "&" + wakeUp;
 			string URL = logURL + "?id=" + id + "&" + message;
 
 			SendRequest(message, URL);
-			
+
 			MouseMove -= new MouseEventHandler(MainForm_MouseMove_SUSPENDED);
+			KeyPress -= new KeyPressEventHandler(MainForm_KeyPress_SUSPENDED);
+
 			KeyPress += new KeyPressEventHandler(MainForm_KeyPressed);
 		}
 
@@ -609,11 +622,9 @@ namespace PowerSaver
 		{
 			string message = cmdWrite + "&" + suspend;
 			string URL = logURL + "?id=" + id + "&" + message;
-			string argument = "standby force";
 
 			SendRequest(message, URL);
-
-			Process.Start(fileName: @"C:\Users\jay\Downloads\nircmd-x64\nircmd.exe", arguments: argument);
+			Application.SetSuspendState(PowerState.Suspend, false, false);
 		}
 
 		public void Hibernate()
@@ -622,19 +633,16 @@ namespace PowerSaver
 			string URL = logURL + "?id=" + id + "&" + message;
 
 			SendRequest(message, URL);
-
-			Process.Start(fileName: "rundll32", arguments: "powrprof.dll, SetSuspendState");
+			Application.SetSuspendState(PowerState.Hibernate, false, false);
 		}
 
 		public void ShutDown()
 		{
 			String message = cmdWrite + "&" + shutdown;
 			String URL = logURL + "?id=" + id + "&" + message;
-			String argument = "exitwin poweroff";
 
 			SendRequest(message, URL);
-
-			Process.Start(fileName: @"C:\Users\jay\Downloads\nircmd-x64\nircmd.exe", arguments: argument);
+			Process.Start("shutdown.exe", "-s");
 		}
 
 		void Execute()
